@@ -1,0 +1,15 @@
+/target
+.env
+/target/
+*/target/**
+Cargo.lock
+
+**/*.rs.bk
+
+/.vscode
+/.idea/
+/.history/
+
+
+.DS_Store
+actix-web-grants
