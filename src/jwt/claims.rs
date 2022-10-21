@@ -25,7 +25,7 @@ impl Claims {
 pub(crate) fn encode_jwt(claims: Claims) -> Result<String, ApiError> {
     let encoding_key = EncodingKey::from_secret(&CONFIG.jwt_key.as_ref());
     jsonwebtoken::encode(&Header::default(), &claims, &encoding_key)
-        .map_err(|e| ApiError::Unauthorized {detail: e.to_string()})
+        .map_err(|e| ApiError::Unauthorized(e.to_string()))
 }
 
 /// Decode a json web token (JWT)
@@ -33,5 +33,5 @@ pub(crate) fn decode_jwt(token: &str) -> Result<Claims, ApiError> {
     let decoding_key = DecodingKey::from_secret(&CONFIG.jwt_key.as_ref());
     jsonwebtoken::decode::<Claims>(token, &decoding_key, &Validation::default())
         .map(|data| data.claims)
-        .map_err(|e| ApiError::Unauthorized {detail: e.to_string()})
+        .map_err(|e| ApiError::Unauthorized(e.to_string()))
 }

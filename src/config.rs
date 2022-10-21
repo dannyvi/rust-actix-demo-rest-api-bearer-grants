@@ -1,12 +1,12 @@
-// use crate::database::DatabaseConnection;
+use crate::database::DatabaseConnection;
 use dotenvy::dotenv;
 use serde::Deserialize;
 
 #[derive(Clone, Deserialize, Debug)]
 pub struct Config {
     pub auth_salt: String,
-    // pub database: DatabaseConnection,
-    // pub database_url: String,
+    pub database: DatabaseConnection,
+    pub database_url: String,
     pub jwt_expiration: i64,
     pub jwt_key: String,
     pub redis_url: String,

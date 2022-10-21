@@ -11,8 +11,5 @@ pub(crate) fn access_denied() -> HttpResponse {
 
 /// Create a json web token (JWT)
 pub(crate) fn is_user() -> HttpResponse {
-    ApiError::PermissionDenied {
-        detail: "Authenticated user required.".to_string(),
-    }
-    .error_response()
+    ApiError::PermissionDenied("Authenticated user required.".to_string()).error_response()
 }

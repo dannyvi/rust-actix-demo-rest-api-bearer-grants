@@ -1,33 +1,36 @@
 use actix_web::{error, http::StatusCode, HttpResponse, ResponseError};
 use chrono::Local;
-use derive_more::{Display, Error, TryInto};
+use derive_more::{Display, TryInto};
 use serde::{Deserialize, Serialize};
 
-#[derive(Clone, Debug, Display, Error, TryInto)]
+#[derive(Clone, Debug, Display, TryInto)]
 pub enum ApiError {
+    CacheError(String),
     #[display(fmt = "Internal Error")]
     InternalError,
     #[display(fmt = "Unauthorized")]
-    Unauthorized { detail: String },
+    Unauthorized(String),
     #[display(fmt = "Validation Error")]
-    ValidationError { detail: String },
+    ValidationError(String),
     #[display(fmt = "Permission Denied")]
-    PermissionDenied { detail: String },
+    PermissionDenied(String),
 }
 
 impl error::ResponseError for ApiError {
     fn error_response(&self) -> HttpResponse {
         match self {
-            Self::InternalError => HttpResponse::new(StatusCode::INTERNAL_SERVER_ERROR),
-            _ =>  HttpResponse::build(self.status_code()).json(ErrorResponse::from(self)),
+            Self::InternalError | Self::CacheError(_) => {
+                HttpResponse::new(StatusCode::INTERNAL_SERVER_ERROR)
+            }
+            _ => HttpResponse::build(self.status_code()).json(ErrorResponse::from(self)),
         }
     }
 
     fn status_code(&self) -> StatusCode {
         match *self {
-            Self::Unauthorized { detail: _ } => StatusCode::UNAUTHORIZED,
-            Self::PermissionDenied { detail: _ } => StatusCode::FORBIDDEN,
-            Self::ValidationError { detail: _ } => StatusCode::EXPECTATION_FAILED,
+            Self::Unauthorized(_) => StatusCode::UNAUTHORIZED,
+            Self::PermissionDenied(_) => StatusCode::FORBIDDEN,
+            Self::ValidationError(_) => StatusCode::EXPECTATION_FAILED,
             _ => StatusCode::INTERNAL_SERVER_ERROR,
         }
     }
